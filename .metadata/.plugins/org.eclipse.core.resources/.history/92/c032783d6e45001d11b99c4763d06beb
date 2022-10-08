@@ -1,0 +1,48 @@
+package user;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+public class UserDAO {
+	private Connection conn;
+	private PreparedStatement pstmt;
+	private ResultSet rs;
+	
+	public static Connection getConnection() { //데이터베이스와 연결상태 관리
+		try {
+			String dbURL = "jdbc:mysql://localhost:3306/myweb";
+			String dbID = "root";
+			String dbPassword = "root";
+			System.out.println("실행중?>?333333333333333");
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			return DriverManager.getConnection(dbURL, dbID, dbPassword);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public int login(String userID, String userPassword) {
+		System.out.println("실행중?>?22222222222");
+		String SQL = "SELECT userPassword FROM USER WHERE userID = ?";
+		try {
+			System.out.println("실행중?>77777777777");
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, userID);
+			rs = pstmt.executeQuery();
+			System.out.println("실행중?>444444444444444");
+			if (rs.next()) {
+				if(rs.getString(1).equals(userPassword))
+					return 1; // 로그인 성공
+				else
+					return 0; // 비밀번호 불일치
+			}
+			return -1; // 아이디 없음
+		} catch(Exception e) {
+			System.out.println("실행중?>?555555555555");
+			e.printStackTrace();
+		}
+		System.out.println("실행중?>?6666666666666");
+		return -2; // 데이터베이스 오류
+	}
+}

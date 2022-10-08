@@ -1,0 +1,45 @@
+package board;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class boardDAO {
+	private Connection conn;
+	private PreparedStatement pstmt;
+	private ResultSet rs;
+	
+	public boardDAO() { //데이터베이스와 연결상태 관리
+		try {
+			String dbURL = "jdbc:mysql://localhost:3306/myweb";
+			String dbID = "root";
+			String dbPassword = "root";
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(dbURL, dbID, dbPassword);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public int upload(String boardtitle, String userid, String boardcontent) {
+		String SQL = "INSERT INTO board values(?, ?, ?, ?, ?, ?)";
+		try {
+			pstmt = conn.prepareStatement(SQL);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				int count = rs.getInt(1) + 1;
+			}
+			pstmt.setInt(1, count);
+			pstmt.setString(2, boardtitle);
+			pstmt.setString(3, userid);
+			pstmt.setString(4, boarddate);
+			pstmt.setString(5, boardcontent);
+			pstmt.setInt(6, 0);
+			return pstmt.executeUpdate();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return 1; // 데이터베이스 오류
+	}
+}

@@ -1,0 +1,10 @@
+package board;
+
+public class board {
+	int boardid;
+	String boardtitle;
+	String userid;
+	String boarddate;
+	String boardcontent;
+	int boardaavailable;
+}

@@ -1,0 +1,137 @@
+package board;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
+public class boardDAO {
+	private Connection conn;
+	private PreparedStatement pstmt;
+	private ResultSet rs;
+	
+	public boardDAO() { //데이터베이스와 연결상태 관리
+		try {
+			String dbURL = "jdbc:mysql://localhost:3306/myweb";
+			String dbID = "root";
+			String dbPassword = "root";
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(dbURL, dbID, dbPassword);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String getDate() {
+		String SQL = "SELECT NOW()";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ""; //데이터베이스 오류
+	}
+	
+	public int getNext() {
+		String SQL = "select count(*) from board";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt(1) + 1;
+			}
+			return 1; 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return -1; //데이터베이스 오류
+	}
+	
+	public int upload(String boardtitle, String userid, String boardcontent) {
+		String SQL = "INSERT INTO board values(?, ?, ?, ?, ?, ?)";
+		try {
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, getNext());
+			pstmt.setString(2, boardtitle);
+			pstmt.setString(3, userid);
+			pstmt.setString(4, getDate());
+			pstmt.setString(5, boardcontent);
+			pstmt.setInt(6, 0);
+			return pstmt.executeUpdate();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return -1; // 데이터베이스 오류
+	}
+	
+	public int getpage() {
+		int cnt = 0;
+		int page_cnt = 0;
+		try{
+			String SQL = "SELECT COUNT(*) FROM board";
+			pstmt = conn.prepareStatement(SQL);
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) {
+				cnt = rs.getInt(1);
+			}
+			page_cnt = cnt/10;
+			return page_cnt;
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public ArrayList<Board> board_list(int pageNumber) {
+		ArrayList<Board> temp_list = new ArrayList<Board>();
+		// ArrayList<String> temp_list = new ArrayList<String>();
+		try {
+			String SQL = "select * from board order by boarddate desc, boarddate limit ?,?";
+			pstmt = conn.prepareStatement(SQL);
+				
+			pstmt.setInt(1, (pageNumber-1)*10);
+			pstmt.setInt(2, 10);
+				
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Board data = new Board();
+				data.setboardid(rs.getInt(1));
+				data.setboardtitle(rs.getString(2));
+				data.setuserid(rs.getString(3));
+				data.setboarddate(rs.getString(4));
+				data.setboardcontent(rs.getString(5));
+				data.setboardaavailable(rs.getInt(6));
+				temp_list.add(data);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return temp_list;
+	}
+	
+	public int board_content(int boardid) {
+		try{
+			String SQL = "SELECT * from board where boardid = ?";
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, boardid);
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) {
+				cnt = rs.getInt(1);
+			}
+			page_cnt = cnt/10;
+			return page_cnt;
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return -1;
+	}
+}

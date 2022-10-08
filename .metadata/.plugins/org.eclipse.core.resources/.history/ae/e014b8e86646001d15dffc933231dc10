@@ -1,0 +1,47 @@
+package board;
+
+public class Board {
+	int boardid;
+	String boardtitle;
+	String userid;
+	String boarddate;
+	String boardcontent;
+	int boardaavailable;
+	
+	public int getboardid() {
+		return boardid;
+	}
+	public void setboardid(int boardid) {
+		this.boardid = boardid;
+	}
+	public String getboardtitle() {
+		return boardtitle;
+	}
+	public void setboardtitle(String boardtitle) {
+		this.boardtitle = boardtitle;
+	}
+	public String getUserid() {
+		return userid;
+	}
+	public void setUserid(String userid) {
+		this.userid = userid;
+	}
+	public String getBoarddate() {
+		return boarddate;
+	}
+	public void setBoarddate(String boarddate) {
+		this.boarddate = boarddate;
+	}
+	public String getBoardcontent() {
+		return boardcontent;
+	}
+	public void setBoardcontent(String boardcontent) {
+		this.boardcontent = boardcontent;
+	}
+	public int getBoardaavailable() {
+		return boardaavailable;
+	}
+	public void setBoardaavailable(int boardaavailable) {
+		this.boardaavailable = boardaavailable;
+	}
+}
