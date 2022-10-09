@@ -1,0 +1,57 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="java.io.PrintWriter" %>
+<%@ page import="chat.chatDAO" %>
+<% request.setCharacterEncoding("UTF-8"); %>
+<jsp:useBean id="chat" class="chat.chat" scope="page" /> 
+<jsp:setProperty name="chat" property="message" /> 
+<!DOCTYPE html>
+<html>
+<head>
+<%@ include file="base_head.jsp" %>
+</head>
+<body>
+	<%
+		int chat_room = -1;
+		if (request.getParameter("chat_room") != null) {
+			chat_room = Integer.parseInt(request.getParameter("chat_room"));
+		}
+	
+		String register = null;
+		if (session.getAttribute("userID") != null) {
+			register = (String) session.getAttribute("userID");
+		}
+		if (register == null) {
+			PrintWriter script = response.getWriter();
+			script.println("<script>");
+			script.println("alert('로그인되어있지 않습니다.')");
+			script.println("history.back()");
+			script.println("</script>");
+		} else {
+			chatDAO chat_data = new chatDAO();
+			int result = chat_data.room_enter(register, chat.getMessage(), chat_room);
+			if (result == -1) {
+				PrintWriter script = response.getWriter();
+				script.println("<script>");
+				script.println("alert('데이터베이스 오류')");
+				script.println("history.back()");
+				script.println("</script>");
+			} else {
+				if (chat_room.equals("1")) {
+					PrintWriter script = response.getWriter();
+					script.println("<script>");
+					script.println("alert('채팅방 1입장')");
+					script.println("location.href = 'chat_room.jsp?chat_room=1'");
+					script.println("</script>");
+				} else if (chat_room.equals("2")){
+					PrintWriter script = response.getWriter();
+					script.println("<script>");
+					script.println("alert('채팅방 2입장')");
+					script.println("location.href = 'chat_room.jsp?chat_room=2'");
+					script.println("</script>");
+				}
+			}
+		}
+	%>		
+</body>
+</html>
