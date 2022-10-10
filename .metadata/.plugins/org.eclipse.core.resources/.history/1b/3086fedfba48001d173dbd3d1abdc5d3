@@ -1,0 +1,58 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <title>Testing websockets</title>
+</head>
+<body>
+    <fieldset>
+        <textarea id="messageWindow" rows="10" cols="50" readonly="true"></textarea>
+        <br/>
+        <input id="inputMessage" type="text"/>
+        <input type="submit" value="send" onclick="send()" />
+    </fieldset>
+</body>
+    <script type="text/javascript">
+        var textarea = document.getElementById("messageWindow");
+        var webSocket = new WebSocket('ws://localhost:8080/myWeb/broadcasting');
+        var inputMessage = document.getElementById('inputMessage');
+    webSocket.onerror = function(event) {
+    	console.log("아 언제 실행되고있는거냐111111");
+      onError(event)
+    };
+
+    webSocket.onopen2 = function(event) {
+    	console.log("아 언제 실행되고있는거냐2222222");
+      onOpen2(event)
+    };
+
+    webSocket.onmessage = function(event) {
+    	console.log("아 언제 실행되고있는거냐3333333");
+      onMessage(event)
+    };
+
+    function onMessage(event) {
+    	console.log("아 언제 실행되고있는거냐4444444");
+        textarea.value += "상대 : " + event.data + "\n";
+    }
+
+    function onOpen2(event) {
+    	console.log("아 언제 실행되고있는거냐555555");
+        textarea.value += "연결 성공\n";
+    }
+
+    function onError(event) {
+    	console.log("아 언제 실행되고있는거냐6666666");
+      alert(event.data);
+    }
+
+    function send() {
+    	console.log("아 언제 실행되고있는거냐777777777");
+        textarea.value += "나 : " + inputMessage.value + "\n";
+        webSocket.send(inputMessage.value);
+        inputMessage.value = "";
+    }
+  </script>
+</html>

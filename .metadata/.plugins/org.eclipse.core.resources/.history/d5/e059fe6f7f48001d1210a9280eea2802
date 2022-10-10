@@ -1,0 +1,114 @@
+package chat;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Random;
+
+import board.Board;
+
+public class chatDAO {
+	private Connection conn;
+	private PreparedStatement pstmt;
+	private ResultSet rs;
+	
+	public chatDAO() { //데이터베이스와 연결상태 관리
+		try {
+			String dbURL = "jdbc:mysql://localhost:3306/myweb";
+			String dbID = "root";
+			String dbPassword = "root";
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(dbURL, dbID, dbPassword);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String getDate() {
+		String SQL = "SELECT NOW()";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ""; //데이터베이스 오류
+	}
+	
+	public String room_join(String userID) {
+		Random random = new Random();
+		int temp_num = random.nextInt(2) + 1;
+		String rand_num = Integer.toString(temp_num);
+		String SQL = String.format("INSERT INTO chat_room%s VALUES (?, ?, ?)", rand_num);
+		System.out.println(SQL);
+		try {
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, userID);
+			pstmt.setString(2, "입장");
+			pstmt.setString(3, getDate());
+			pstmt.executeUpdate();
+			return rand_num;
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return ""; // 데이터베이스 오류
+	}
+	
+	public int room_enter(String userID, String message, int chat_room) {
+		String SQL = String.format("INSERT INTO chat_room%s VALUES (?, ?, ?)", chat_room);
+		System.out.println(SQL);
+		try {
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, userID);
+			pstmt.setString(2, message);
+			pstmt.setString(3, getDate());
+			pstmt.executeUpdate();
+			return 1;
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return -1; // 데이터베이스 오류
+	}
+	
+	public ArrayList<chat> chat_data(int chat_room) {
+		ArrayList<chat> temp_list = new ArrayList<chat>();
+		try {
+			String SQL = String.format("select * from chat_room%s"), chat_room);
+			
+			pstmt = conn.prepareStatement(SQL);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				chat data = new chat();
+				data.setUserID(rs.getString(1));
+				data.setMessage(rs.getString(2));
+				data.setMs_date(rs.getString(3));
+				temp_list.add(data);
+			}
+			
+			
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, (pageNumber-1)*10);
+			pstmt.setInt(2, 10);
+				
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Board data = new Board();
+				data.setboardid(rs.getInt(1));
+				data.setboardtitle(rs.getString(2));
+				data.setuserid(rs.getString(3));
+				data.setboarddate(rs.getString(4));
+				data.setboardcontent(rs.getString(5));
+				data.setboardaavailable(rs.getInt(6));
+				temp_list.add(data);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return temp_list;
+	}
+}

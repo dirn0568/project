@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="chat.chatDAO" %>
+<%@ page import="chat.chat" %>
+<%@ page import="java.util.ArrayList" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,6 +19,43 @@
 	%>
 	들어왔냐?? 근데 여기 몇번방임?
 	
+	<%
+		try{
+			chatDAO chat_data = new chatDAO();
+			ArrayList<chat> chat_list = chat_data.chat_data(chat_room);
+			for(int i = 0; i <= chat_list.size(); i++) {
+	%>
+	<%
+				if (register.equals(chat_list.get(i).getUserID())) {
+	%>	
+					<div align="right" style="background:#FFE400;">
+						<tr>
+							<td><%= chat_list.get(i).getUserID() %></td>
+							<td><%= chat_list.get(i).getMessage() %></td>
+							<td><%= chat_list.get(i).getMs_date().substring(0, 11) + chat_list.get(i).getMs_date().substring(11, 13) + "시" + chat_list.get(i).getMs_date().substring(14, 16) + "분" %></td>
+						</tr>
+					</div>
+					<p></p>
+	<%
+				} else {
+	%>
+					<div align="left" style="background:#ABF200;">
+						<tr>
+							<td><%= chat_list.get(i).getUserID() %></td>
+							<td><%= chat_list.get(i).getMessage() %></td>
+							<td><%= chat_list.get(i).getMs_date().substring(0, 11) + chat_list.get(i).getMs_date().substring(11, 13) + "시" + chat_list.get(i).getMs_date().substring(14, 16) + "분" %></td>
+						</tr>
+					</div>
+					<p></p>
+	<%
+				}
+	%>
+	<%
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	%>
 	<form method="post" action="chatAction.jsp?chat_room=<%=chat_room%>">
 		<h3 style="text-align:center;">메세지</h3>
 		<div class="form-group">
@@ -26,6 +65,6 @@
 	</form>
 	
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-	<script src="js/bootstrap.js"></script>
+	<script src="js/bootstrap.js"></script>	
 </body>
 </html>

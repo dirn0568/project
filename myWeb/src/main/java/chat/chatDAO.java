@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
+import java.util.ArrayList;
 import java.util.Random;
+
+import board.Board;
 
 public class chatDAO {
 	private Connection conn;
@@ -71,5 +73,24 @@ public class chatDAO {
 			e.printStackTrace();
 		}
 		return -1; // 데이터베이스 오류
+	}
+	
+	public ArrayList<chat> chat_data(int chat_room) {
+		ArrayList<chat> temp_list = new ArrayList<chat>();
+		try {
+			String SQL = String.format("select * from chat_room%s", chat_room);
+			pstmt = conn.prepareStatement(SQL);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				chat data = new chat();
+				data.setUserID(rs.getString(1));
+				data.setMessage(rs.getString(2));
+				data.setMs_date(rs.getString(3));
+				temp_list.add(data);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return temp_list;
 	}
 }
